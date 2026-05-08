@@ -1,0 +1,4 @@
+models/
+*.bin
+*.safetensors
+.ipynb_checkpoints/
