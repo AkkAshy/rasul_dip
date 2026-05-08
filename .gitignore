@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# Django
+*.log
+db.sqlite3
+backend/.env
+backend/staticfiles/
+backend/media/
+
+# ML
+ml/models/
+*.bin
+*.safetensors
+.ipynb_checkpoints/
+
+# Node
+node_modules/
+.next/
+out/
+frontend/.env.local
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+*.swp
+
+# Playwright caches and local storage
+playwright-report/
+test-results/
+storage_state.json
+
+# tmp scripts
+/tmp/
+
+# Claude Code-specific
+.claude/
