@@ -32,9 +32,9 @@ export default async function ProductPage({
     return (
       <main className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-slate-500 mb-4">Продукт не найден или нет данных</p>
+          <p className="text-slate-500 mb-4">Tovar tabılmadı yamasa maǵlıwmat joq</p>
           <Link href="/dashboard" className="text-blue-600 hover:underline">
-            ← К дашборду
+            ← Dashboardqa
           </Link>
         </div>
       </main>
@@ -56,20 +56,20 @@ export default async function ProductPage({
           href="/dashboard"
           className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 mb-6"
         >
-          <ArrowLeft className="size-4" /> К дашборду
+          <ArrowLeft className="size-4" /> Dashboardqa
         </Link>
 
         <header className="mb-8">
           <h1 className="text-3xl font-bold">{summary.product.name}</h1>
           <div className="mt-2 flex items-center gap-4 text-sm text-slate-500 flex-wrap">
-            <span>Источник: {summary.product.source}</span>
+            <span>Dárek: {summary.product.source}</span>
             {summary.product.category && (
-              <span>Категория: {summary.product.category}</span>
+              <span>Kategoriya: {summary.product.category}</span>
             )}
             {summary.product.rating_avg != null && (
               <span>★ {summary.product.rating_avg.toFixed(2)}</span>
             )}
-            <span>{summary.reviews_total} отзывов</span>
+            <span>{summary.reviews_total} pikir</span>
             {summary.product.url && (
               <a
                 href={summary.product.url}
@@ -77,7 +77,7 @@ export default async function ProductPage({
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 text-blue-600 hover:underline"
               >
-                на uzum <ExternalLink className="size-3.5" />
+                uzum'da kóriw <ExternalLink className="size-3.5" />
               </a>
             )}
           </div>
@@ -91,18 +91,18 @@ export default async function ProductPage({
         {/* Distribution + Aspects */}
         <div className="grid gap-6 md:grid-cols-2 mb-6">
           <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-            <h2 className="text-lg font-semibold mb-4">Распределение тональностей</h2>
+            <h2 className="text-lg font-semibold mb-4">Tónlik dárejeleri</h2>
             {summary.sentiment_distribution.length === 0 ? (
-              <p className="text-slate-500 text-sm">Анализ ещё не проведён</p>
+              <p className="text-slate-500 text-sm">Analiz házirgeshe joq</p>
             ) : (
               <SentimentDonut data={summary.sentiment_distribution} />
             )}
           </section>
 
           <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-            <h2 className="text-lg font-semibold mb-4">Аспекты</h2>
+            <h2 className="text-lg font-semibold mb-4">Aspekt'ler</h2>
             {aspectMap.size === 0 ? (
-              <p className="text-slate-500 text-sm">Аспекты не размечены</p>
+              <p className="text-slate-500 text-sm">Aspekt'ler belgilenmegen</p>
             ) : (
               <ul className="space-y-3">
                 {Array.from(aspectMap.entries()).map(([name, counts]) => {
@@ -113,7 +113,7 @@ export default async function ProductPage({
                       <div className="flex justify-between text-sm">
                         <span>{name}</span>
                         <span className="text-slate-500">
-                          {pos}/{total} позитив
+                          {pos}/{total} pozitiv
                         </span>
                       </div>
                       <div className="mt-1 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -140,9 +140,9 @@ export default async function ProductPage({
 
         {/* Last reviews */}
         <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-          <h2 className="text-lg font-semibold mb-2">Последние отзывы</h2>
+          <h2 className="text-lg font-semibold mb-2">Eń jańa pikirler</h2>
           <p className="text-sm text-slate-500 mb-4">
-            Отзывы с метками от sentiment-модели и звёздами от клиента.
+            Sentiment-modeli belgileri hám klient juldızları menen pikirler.
           </p>
           <ReviewList reviews={summary.latest_reviews} />
         </section>

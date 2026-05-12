@@ -38,7 +38,6 @@ export default async function ProductsPage({
 }) {
   const sp = await searchParams;
 
-  // Соберём query params для DRF
   const apiParams = new URLSearchParams();
   apiParams.set("page_size", "50");
   if (sp.search) apiParams.set("search", sp.search);
@@ -60,13 +59,13 @@ export default async function ProductsPage({
           href="/"
           className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 mb-6"
         >
-          <ArrowLeft className="size-4" /> Назад
+          <ArrowLeft className="size-4" /> Artqa
         </Link>
 
         <header className="mb-6">
-          <h1 className="text-3xl font-bold mb-1">Продукты</h1>
+          <h1 className="text-3xl font-bold mb-1">Tovarlar</h1>
           <p className="text-slate-500 text-sm">
-            Всего: {total}. Кликни товар чтобы увидеть Demand Score и аспекты.
+            Tutıq: {total}. Demand Score hám aspekt'lerdı kóriw uchın tovarǵa basıń.
           </p>
         </header>
 
@@ -76,7 +75,7 @@ export default async function ProductsPage({
             type="text"
             name="search"
             defaultValue={sp.search || ""}
-            placeholder="Поиск по названию"
+            placeholder="Tovar atı boyınsha izlew"
             className="rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
           />
           <select
@@ -84,7 +83,7 @@ export default async function ProductsPage({
             defaultValue={sp.category || ""}
             className="rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
           >
-            <option value="">Все категории</option>
+            <option value="">Barlıq kategoriyalar</option>
             {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -96,30 +95,30 @@ export default async function ProductsPage({
             defaultValue={sp.ordering || "-reviews_count"}
             className="rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
           >
-            <option value="-reviews_count">По числу отзывов ↓</option>
-            <option value="-rating_avg">По рейтингу ↓</option>
-            <option value="rating_avg">По рейтингу ↑</option>
-            <option value="-created_at">Свежие первыми</option>
-            <option value="name">По имени A→Z</option>
+            <option value="-reviews_count">Pikir sanı boyınsha ↓</option>
+            <option value="-rating_avg">Reyting boyınsha ↓</option>
+            <option value="rating_avg">Reyting boyınsha ↑</option>
+            <option value="-created_at">Jańalar birinshi</option>
+            <option value="name">At boyınsha A→Z</option>
           </select>
           <div className="md:col-span-3 flex gap-2">
             <button
               type="submit"
               className="rounded-md bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium"
             >
-              Применить
+              Qollaw
             </button>
             <Link
               href="/products"
               className="rounded-md border border-slate-300 dark:border-slate-700 px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
             >
-              Сброс
+              Taslaw
             </Link>
           </div>
         </form>
 
         {products.length === 0 ? (
-          <p className="text-slate-500">Ничего не найдено.</p>
+          <p className="text-slate-500">Tabılmadı.</p>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {products.map((p) => (
@@ -139,7 +138,7 @@ export default async function ProductsPage({
                     </span>
                   )}
                   {p.rating_avg != null && <span>★ {p.rating_avg.toFixed(2)}</span>}
-                  <span>{p.reviews_count} отзывов</span>
+                  <span>{p.reviews_count} pikir</span>
                 </div>
               </Link>
             ))}

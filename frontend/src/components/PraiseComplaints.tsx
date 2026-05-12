@@ -13,13 +13,13 @@ export function PraiseComplaints({
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <Block
-        title="За что хвалят"
+        title="Ne uchun maqtaydı"
         items={praise}
         icon={<ThumbsUp className="size-5 text-green-600" />}
         color="green"
       />
       <Block
-        title="За что ругают"
+        title="Ne uchun shaǵımladı"
         items={complaints}
         icon={<ThumbsDown className="size-5 text-red-600" />}
         color="red"
@@ -50,7 +50,7 @@ function Block({
         {title}
       </h3>
       {items.length === 0 ? (
-        <p className="text-slate-500 text-sm">Нет упоминаний</p>
+        <p className="text-slate-500 text-sm">Eslewler joq</p>
       ) : (
         <ul className="space-y-3">
           {items.map((it, i) => (

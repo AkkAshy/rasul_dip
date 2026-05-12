@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sentiment Analysis — Uzbekistan",
+  title: "Tovar Talab Indeksi — Uzum Market",
   description:
-    "Анализ тональности отзывов с маркетплейсов Узбекистана для определения спроса на продукты",
+    "Klient pikirlerine tiykarlanıp sentimental analiz argalı ónim talabın anıglaw platforması",
 };
 
 export default function RootLayout({
@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="ru"
+      lang="kaa"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>

@@ -8,9 +8,9 @@ function scoreColor(s: number): string {
 }
 
 function scoreVerdict(s: number): string {
-  if (s >= 50) return "высокий";
-  if (s >= 25) return "средний";
-  return "низкий";
+  if (s >= 50) return "joqarı";
+  if (s >= 25) return "orta";
+  return "tómen";
 }
 
 export function DemandTable({
@@ -25,13 +25,13 @@ export function DemandTable({
       <table className="w-full text-sm">
         <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500">
           <tr>
-            <th className="text-left p-3">Товар</th>
+            <th className="text-left p-3">Tovar</th>
             <th className="text-right p-3">Demand</th>
             <th className="text-right p-3">NSS</th>
             <th className="text-right p-3">Pop.</th>
-            <th className="text-right p-3">Отзывов</th>
+            <th className="text-right p-3">Pikir</th>
             {highlightBottleneck && (
-              <th className="text-left p-3">Узкое горлышко</th>
+              <th className="text-left p-3">Tar boyın</th>
             )}
           </tr>
         </thead>

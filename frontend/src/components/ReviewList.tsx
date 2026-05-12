@@ -1,15 +1,15 @@
 import type { ReviewItem } from "@/lib/api";
 
 const LABEL_RU: Record<string, string> = {
-  positive: "позитив",
-  neutral: "нейтрал",
-  negative: "негатив",
+  positive: "pozitiv",
+  neutral: "neytral",
+  negative: "negativ",
 };
 
 const LANG_LABEL: Record<string, string> = {
   ru: "RU",
   uz: "UZ",
-  uz_cyr: "UZ (кир)",
+  uz_cyr: "UZ (kir)",
   kaa: "KAA",
   unk: "?",
 };
@@ -25,7 +25,7 @@ const LABEL_CLS: Record<string, string> = {
 
 export function ReviewList({ reviews }: { reviews: ReviewItem[] }) {
   if (reviews.length === 0) {
-    return <p className="text-slate-500 text-sm">Нет отзывов</p>;
+    return <p className="text-slate-500 text-sm">Pikirler joq</p>;
   }
 
   return (
@@ -57,11 +57,11 @@ export function ReviewList({ reviews }: { reviews: ReviewItem[] }) {
               </span>
             )}
             <span className="text-xs text-slate-500">
-              {r.author || "анон"}
+              {r.author || "anon"}
             </span>
             {r.posted_at && (
               <span className="text-xs text-slate-400 ml-auto">
-                {new Date(r.posted_at).toLocaleDateString("ru-RU")}
+                {new Date(r.posted_at).toLocaleDateString("uz-UZ")}
               </span>
             )}
           </div>

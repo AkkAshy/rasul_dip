@@ -7,11 +7,11 @@ export default function Home() {
       <div className="container mx-auto px-6 py-16 max-w-6xl">
         <header className="mb-16">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-            Индекс спроса по&nbsp;отзывам
+            Pikirler tiykarındaǵı talab indeksi
           </h1>
           <p className="mt-4 text-lg text-slate-600 dark:text-slate-400 max-w-2xl">
-            Определение спроса на продукт через сентимент-анализ
-            клиентских отзывов с&nbsp;маркетплейса Uzum&nbsp;Market.
+            Klient pikirlerine sentimental analiz qollap, Uzum&nbsp;Market
+            tovarları talabın anıglaytuǵın platforma.
           </p>
         </header>
 
@@ -19,20 +19,20 @@ export default function Home() {
           <FeatureCard
             href="/dashboard"
             icon={<BarChart3 className="size-6" />}
-            title="Дашборд"
-            desc="Индекс спроса и тональность по всем продуктам"
+            title="Dashboard"
+            desc="Talab indeksi hám tónlik barlıq tovarlar boyınsha"
           />
           <FeatureCard
             href="/products"
             icon={<MessageSquare className="size-6" />}
-            title="Продукты"
-            desc="Список товаров с собранными отзывами"
+            title="Tovarlar"
+            desc="Jıynalǵan pikirleri bar tovarlar dizimi"
           />
           <FeatureCard
             href="/dashboard#demand"
             icon={<TrendingUp className="size-6" />}
-            title="Топ спроса"
-            desc="Что покупают и хвалят чаще всего"
+            title="Joqarı talab"
+            desc="Eń kóp satılatuǵın hám maqtanatuǵın tovarlar"
           />
         </div>
       </div>

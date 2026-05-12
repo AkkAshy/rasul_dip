@@ -28,10 +28,10 @@ export async function CategoryDemand() {
 
   return (
     <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-      <h2 className="text-xl font-semibold mb-1">Спрос по категориям</h2>
+      <h2 className="text-xl font-semibold mb-1">Kategoriya boyınsha talab</h2>
       <p className="text-sm text-slate-500 mb-4">
-        Средний Demand Score, агрегированный по категории товара. Полезно
-        для бизнес-выводов о направлениях ассортимента.
+        Tovar kategoriyaları boyınsha orta Demand Score. Biznes-strategiya
+        qabıllawda paydalı.
       </p>
       <div className="space-y-3">
         {rows.slice(0, 12).map((r) => (
@@ -43,7 +43,7 @@ export async function CategoryDemand() {
                   {r.avg_demand_score.toFixed(1)}
                 </span>
                 <span className="ml-3 text-xs">
-                  {r.products} тов. · {r.total_reviews} отз.
+                  {r.products} tov. · {r.total_reviews} pikir
                 </span>
               </span>
             </div>

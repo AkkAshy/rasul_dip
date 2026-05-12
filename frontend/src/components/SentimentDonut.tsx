@@ -13,9 +13,9 @@ const COLORS: Record<string, string> = {
 };
 
 const LABEL_RU: Record<string, string> = {
-  positive: "Позитив",
-  neutral: "Нейтрал",
-  negative: "Негатив",
+  positive: "Pozitiv",
+  neutral: "Neytral",
+  negative: "Negativ",
 };
 
 export function SentimentDonut({ data }: { data: Item[] }) {

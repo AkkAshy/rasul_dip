@@ -15,9 +15,9 @@ async function fetchDemand(productId: number): Promise<DemandRow | null> {
 }
 
 function classify(score: number): { label: string; cls: string } {
-  if (score >= 50) return { label: "Высокий спрос", cls: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300" };
-  if (score >= 25) return { label: "Средний спрос", cls: "bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300" };
-  return { label: "Низкий спрос", cls: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300" };
+  if (score >= 50) return { label: "Joqarı talab", cls: "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300" };
+  if (score >= 25) return { label: "Orta talab", cls: "bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300" };
+  return { label: "Tómen talab", cls: "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300" };
 }
 
 export async function DemandBadge({ productId }: { productId: number }) {
@@ -35,12 +35,12 @@ export async function DemandBadge({ productId }: { productId: number }) {
       </div>
       <div className="grid grid-cols-3 gap-4 text-sm">
         <Stat label="Net Sentiment" value={`${d.nss > 0 ? "+" : ""}${d.nss.toFixed(2)}`} />
-        <Stat label="Популярность" value={d.popularity.toFixed(2)} />
-        <Stat label="Поправка по аспектам" value={`×${d.aspect_penalty.toFixed(2)}`} />
+        <Stat label="Popularlıq" value={d.popularity.toFixed(2)} />
+        <Stat label="Aspekt poprawkası" value={`×${d.aspect_penalty.toFixed(2)}`} />
       </div>
       {d.bottleneck_aspect && (
         <div className="mt-4 text-sm">
-          <span className="text-slate-500">Узкое горлышко: </span>
+          <span className="text-slate-500">Tar boyın: </span>
           <span className="inline-flex items-center rounded-md bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300 px-2 py-0.5 text-xs ml-1">
             {d.bottleneck_aspect}
           </span>

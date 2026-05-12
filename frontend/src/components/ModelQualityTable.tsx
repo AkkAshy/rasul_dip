@@ -20,17 +20,18 @@ export async function ModelQualityTable() {
 
   return (
     <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-      <h2 className="text-xl font-semibold mb-1">Качество модели по языкам</h2>
+      <h2 className="text-xl font-semibold mb-1">Modeldıń sapası til boyınsha</h2>
       <p className="text-sm text-slate-500 mb-4">
-        Согласованность метки модели и rating-звёзды (4-5★ → positive, 3★ → neutral, 1-2★ → negative).
-        На узбекском метрика резко проседает — обоснование fine-tune'а.
+        Modeldıń belgisi hám klient juldız reytingı arasındaǵı uyǵınlıq
+        (4-5★ → positive, 3★ → neutral, 1-2★ → negative). Ózbek tilinde
+        ózi-anıqlawı keskin tómen — fine-tune zarurlıǵı.
       </p>
       <table className="w-full text-sm">
         <thead className="text-slate-500">
           <tr className="border-b border-slate-200 dark:border-slate-800">
-            <th className="text-left py-2">Язык</th>
-            <th className="text-right py-2">Отзывов</th>
-            <th className="text-right py-2">Согласованность</th>
+            <th className="text-left py-2">Til</th>
+            <th className="text-right py-2">Pikir</th>
+            <th className="text-right py-2">Sapa</th>
             <th className="text-right py-2">+ pos</th>
             <th className="text-right py-2">≈ neu</th>
             <th className="text-right py-2">− neg</th>
