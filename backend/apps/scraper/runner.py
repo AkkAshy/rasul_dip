@@ -95,11 +95,11 @@ def _parse_stats_from_log(job: ScraperJob):
 def start_job(kind: str, params: dict | None = None) -> ScraperJob:
     """Jańa job jaratıp, background thread'ta basladı."""
     with _lock:
-        # Eger jumıs aldıń'ǵı job RUNNING bolsa — refuse
+        # Basqa jumıs ele islep turǵan bolsa — jańasın baslamaymız
         running = ScraperJob.objects.filter(status=JobStatus.RUNNING).first()
         if running:
             raise RuntimeError(
-                f"Jumıs basqa job hali tugaltap atır: #{running.id} ({running.kind})"
+                f"Basqa jumıs ele islep tur: #{running.id} ({running.kind})"
             )
 
         job = ScraperJob.objects.create(
