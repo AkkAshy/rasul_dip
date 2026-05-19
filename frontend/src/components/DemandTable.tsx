@@ -2,9 +2,9 @@ import Link from "next/link";
 import type { DemandRow } from "@/lib/api";
 
 function scoreColor(s: number): string {
-  if (s >= 50) return "text-green-600 font-semibold";
-  if (s >= 25) return "text-amber-500 font-semibold";
-  return "text-red-600 font-semibold";
+  if (s >= 50) return "text-sage";
+  if (s >= 25) return "text-honey";
+  return "text-rust";
 }
 
 function scoreVerdict(s: number): string {
@@ -21,17 +21,29 @@ export function DemandTable({
   highlightBottleneck?: boolean;
 }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+    <div className="panel overflow-x-auto">
       <table className="w-full text-sm">
-        <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500">
-          <tr>
-            <th className="text-left p-3">Tovar</th>
-            <th className="text-right p-3">Demand</th>
-            <th className="text-right p-3">NSS</th>
-            <th className="text-right p-3">Pop.</th>
-            <th className="text-right p-3">Pikir</th>
+        <thead>
+          <tr className="border-b border-hairline text-left">
+            <th className="p-4 font-mono text-[11px] uppercase tracking-wider text-sand-faint">
+              Tovar
+            </th>
+            <th className="p-4 text-right font-mono text-[11px] uppercase tracking-wider text-sand-faint">
+              Demand
+            </th>
+            <th className="p-4 text-right font-mono text-[11px] uppercase tracking-wider text-sand-faint">
+              NSS
+            </th>
+            <th className="p-4 text-right font-mono text-[11px] uppercase tracking-wider text-sand-faint">
+              Pop.
+            </th>
+            <th className="p-4 text-right font-mono text-[11px] uppercase tracking-wider text-sand-faint">
+              Pikir
+            </th>
             {highlightBottleneck && (
-              <th className="text-left p-3">Tar boyın</th>
+              <th className="p-4 text-left font-mono text-[11px] uppercase tracking-wider text-sand-faint">
+                Tar boyın
+              </th>
             )}
           </tr>
         </thead>
@@ -39,50 +51,56 @@ export function DemandTable({
           {rows.map((r) => (
             <tr
               key={r.product_id}
-              className="border-t border-slate-100 dark:border-slate-800/60"
+              className="border-t border-hairline-soft transition-colors hover:bg-raised/50"
             >
-              <td className="p-3 max-w-md">
+              <td className="p-4 max-w-md">
                 <Link
                   href={`/products/${r.product_id}`}
-                  className="text-blue-600 hover:underline line-clamp-2"
+                  className="text-sand line-clamp-2 transition-colors hover:text-clay-bright"
                 >
                   {r.name}
                 </Link>
               </td>
-              <td className="p-3 text-right tabular-nums">
-                <span className={scoreColor(r.demand_score)}>
+              <td className="p-4 text-right">
+                <span
+                  className={`font-mono text-base font-bold tabular-nums ${scoreColor(
+                    r.demand_score
+                  )}`}
+                >
                   {r.demand_score.toFixed(1)}
                 </span>
-                <div className="text-[10px] uppercase text-slate-400 leading-none">
+                <div className="font-mono text-[10px] uppercase leading-none text-sand-faint">
                   {scoreVerdict(r.demand_score)}
                 </div>
               </td>
-              <td className="p-3 text-right tabular-nums">
+              <td className="p-4 text-right">
                 <span
-                  className={
+                  className={`font-mono tabular-nums ${
                     r.nss > 0.3
-                      ? "text-green-600"
+                      ? "text-sage"
                       : r.nss < -0.1
-                      ? "text-red-600"
-                      : "text-slate-500"
-                  }
+                      ? "text-rust"
+                      : "text-sand-dim"
+                  }`}
                 >
                   {r.nss > 0 ? "+" : ""}
                   {r.nss.toFixed(2)}
                 </span>
               </td>
-              <td className="p-3 text-right tabular-nums text-slate-500">
+              <td className="p-4 text-right font-mono tabular-nums text-sand-dim">
                 {r.popularity.toFixed(2)}
               </td>
-              <td className="p-3 text-right tabular-nums">{r.reviews_analyzed}</td>
+              <td className="p-4 text-right font-mono tabular-nums text-sand">
+                {r.reviews_analyzed}
+              </td>
               {highlightBottleneck && (
-                <td className="p-3">
+                <td className="p-4">
                   {r.bottleneck_aspect ? (
-                    <span className="inline-flex items-center rounded-md bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300 px-2 py-0.5 text-xs">
+                    <span className="inline-flex items-center rounded-md border border-rust/30 bg-rust/10 px-2 py-0.5 text-xs text-rust-bright">
                       {r.bottleneck_aspect}
                     </span>
                   ) : (
-                    <span className="text-slate-400 text-xs">—</span>
+                    <span className="text-sand-faint text-xs">—</span>
                   )}
                 </td>
               )}

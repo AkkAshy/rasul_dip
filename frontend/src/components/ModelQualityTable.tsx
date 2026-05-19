@@ -14,53 +14,74 @@ async function fetchQuality(): Promise<ModelQualityRow[]> {
   }
 }
 
+function qualityColor(pct: number): string {
+  if (pct >= 60) return "text-sage";
+  if (pct >= 30) return "text-honey";
+  return "text-rust";
+}
+
 export async function ModelQualityTable() {
   const rows = await fetchQuality();
   if (rows.length === 0) return null;
 
   return (
-    <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-      <h2 className="text-xl font-semibold mb-1">Modeldıń sapası til boyınsha</h2>
-      <p className="text-sm text-slate-500 mb-4">
-        Modeldıń belgisi hám klient juldız reytingı arasındaǵı uyǵınlıq
-        (4-5★ → positive, 3★ → neutral, 1-2★ → negative). Ózbek tilinde
-        ózi-anıqlawı keskin tómen — fine-tune zarurlıǵı.
+    <section className="panel p-6 animate-fade-up">
+      <h2 className="font-display text-lg font-bold text-sand mb-1.5">
+        Modeldıń sapası til boyınsha
+      </h2>
+      <p className="text-sm text-sand-dim mb-5 leading-relaxed">
+        Modeldıń belgisi hám klient juldız reytingı arasındaǵı uyǵınlıq (4-5★ →
+        positive, 3★ → neutral, 1-2★ → negative). Ózbek tilinde ózi-anıqlawı
+        keskin tómen — fine-tune zarurlıǵı.
       </p>
       <table className="w-full text-sm">
-        <thead className="text-slate-500">
-          <tr className="border-b border-slate-200 dark:border-slate-800">
-            <th className="text-left py-2">Til</th>
-            <th className="text-right py-2">Pikir</th>
-            <th className="text-right py-2">Sapa</th>
-            <th className="text-right py-2">+ pos</th>
-            <th className="text-right py-2">≈ neu</th>
-            <th className="text-right py-2">− neg</th>
+        <thead>
+          <tr className="border-b border-hairline text-left">
+            <th className="py-2.5 font-mono text-[11px] uppercase tracking-wider text-sand-faint">
+              Til
+            </th>
+            <th className="py-2.5 text-right font-mono text-[11px] uppercase tracking-wider text-sand-faint">
+              Pikir
+            </th>
+            <th className="py-2.5 text-right font-mono text-[11px] uppercase tracking-wider text-sand-faint">
+              Sapa
+            </th>
+            <th className="py-2.5 text-right font-mono text-[11px] uppercase tracking-wider text-sand-faint">
+              + pos
+            </th>
+            <th className="py-2.5 text-right font-mono text-[11px] uppercase tracking-wider text-sand-faint">
+              ≈ neu
+            </th>
+            <th className="py-2.5 text-right font-mono text-[11px] uppercase tracking-wider text-sand-faint">
+              − neg
+            </th>
           </tr>
         </thead>
         <tbody>
           {rows.map((r) => (
-            <tr
-              key={r.language}
-              className="border-b border-slate-100 dark:border-slate-800/60"
-            >
-              <td className="py-2.5">{r.language_label}</td>
-              <td className="py-2.5 text-right tabular-nums">{r.total}</td>
-              <td className="py-2.5 text-right tabular-nums">
+            <tr key={r.language} className="border-t border-hairline-soft">
+              <td className="py-3 text-sand">{r.language_label}</td>
+              <td className="py-3 text-right font-mono tabular-nums text-sand-dim">
+                {r.total}
+              </td>
+              <td className="py-3 text-right">
                 <span
-                  className={
-                    r.agreement_pct >= 60
-                      ? "text-green-600 font-medium"
-                      : r.agreement_pct >= 30
-                      ? "text-amber-500 font-medium"
-                      : "text-red-600 font-semibold"
-                  }
+                  className={`font-mono font-semibold tabular-nums ${qualityColor(
+                    r.agreement_pct
+                  )}`}
                 >
                   {r.agreement_pct}%
                 </span>
               </td>
-              <td className="py-2.5 text-right tabular-nums text-green-600">{r.positive}</td>
-              <td className="py-2.5 text-right tabular-nums text-slate-500">{r.neutral}</td>
-              <td className="py-2.5 text-right tabular-nums text-red-600">{r.negative}</td>
+              <td className="py-3 text-right font-mono tabular-nums text-sage">
+                {r.positive}
+              </td>
+              <td className="py-3 text-right font-mono tabular-nums text-sand-dim">
+                {r.neutral}
+              </td>
+              <td className="py-3 text-right font-mono tabular-nums text-rust">
+                {r.negative}
+              </td>
             </tr>
           ))}
         </tbody>

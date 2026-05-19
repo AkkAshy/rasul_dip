@@ -8,10 +8,13 @@ import type { DemandRow } from "@/lib/api";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8001/api";
 
-async function fetchDemand(bottom: boolean = false, limit = 10): Promise<DemandRow[]> {
+// Один запрос на всю таблицу — backend пересчитывает Demand Score 1 раз,
+// а top / bottom / агрегаты выводятся срезами здесь. Раньше было 3×.
+async function fetchAllDemand(): Promise<DemandRow[]> {
   try {
-    const url = `${API_URL}/analysis/demand-index/?limit=${limit}${bottom ? "&bottom=1" : ""}`;
-    const res = await fetch(url, { cache: "no-store" });
+    const res = await fetch(`${API_URL}/analysis/demand-index/?limit=1000`, {
+      cache: "no-store",
+    });
     if (!res.ok) return [];
     return await res.json();
   } catch {
@@ -20,13 +23,13 @@ async function fetchDemand(bottom: boolean = false, limit = 10): Promise<DemandR
 }
 
 export default async function DashboardPage() {
-  const [topDemand, bottomDemand] = await Promise.all([
-    fetchDemand(false, 10),
-    fetchDemand(true, 10),
-  ]);
-
-  const allDemand = await fetchDemand(false, 1000);
+  // Backend отдаёт уже отсортированным по demand_score ↓.
+  const allDemand = await fetchAllDemand();
   const total = allDemand.length;
+
+  const topDemand = allDemand.slice(0, 10);
+  const bottomDemand = allDemand.slice(-10).reverse(); // от худшего
+
   const avgDemand =
     total > 0
       ? allDemand.reduce((sum, r) => sum + r.demand_score, 0) / total
@@ -35,112 +38,117 @@ export default async function DashboardPage() {
   const lowCount = allDemand.filter((r) => r.demand_score < 25).length;
 
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <div className="container mx-auto px-6 py-10 max-w-6xl">
+    <main className="min-h-screen">
+      <div className="container mx-auto px-6 py-12 max-w-6xl">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 mb-6"
+          className="inline-flex items-center gap-2 text-sm text-sand-dim transition-colors hover:text-clay mb-8"
         >
           <ArrowLeft className="size-4" /> Artqa
         </Link>
 
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Tovarlar talab indeksi</h1>
-          <p className="text-slate-600 dark:text-slate-400 max-w-3xl">
-            Composite Demand Score = popularlıq × qoldı-qoldı dárejesi × aspekt
+        <header className="mb-10 animate-fade-up">
+          <div className="font-mono text-xs uppercase tracking-[0.18em] text-clay mb-3">
+            Analytics
+          </div>
+          <h1 className="font-display text-4xl md:text-5xl font-extrabold text-sand">
+            Tovarlar talab indeksi
+          </h1>
+          <p className="mt-4 max-w-3xl text-sand-dim leading-relaxed">
+            Kompozit Demand Score = populyarlıq × qanaatlanıwshılıq × aspekt
             poprawkası. Uzum Market klient pikirlerine sentimental analiz qollap
             esaplanǵan.
           </p>
         </header>
 
-        {/* Scraper boshqaruv paneli */}
-        <div className="mb-8">
+        {/* Scraper panel */}
+        <div className="mb-10 animate-fade-up">
           <ScraperPanel />
         </div>
 
-        {/* KPI kartochkalarınıń sıpatlaması */}
-        <div className="grid gap-4 md:grid-cols-4 mb-10">
-          <StatCard label="Analiz etilgen tovarlar" value={total.toString()} />
+        {/* KPI-полоса */}
+        <div className="mb-12 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-hairline bg-hairline md:grid-cols-4 stagger">
+          <StatCard label="Analiz etilgen tovar" value={total.toString()} />
           <StatCard
             label="Orta Demand Score"
             value={avgDemand.toFixed(1)}
-            valueClass="text-blue-600"
+            accent="clay"
           />
           <StatCard
-            label="Joqarı talab (≥50)"
+            label="Joqarı talab ≥50"
             value={highCount.toString()}
-            valueClass="text-green-600"
-            icon={<TrendingUp className="size-4" />}
+            accent="sage"
+            icon={<TrendingUp className="size-3.5" />}
           />
           <StatCard
-            label="Tómen talab (<25)"
+            label="Tómen talab <25"
             value={lowCount.toString()}
-            valueClass="text-red-600"
-            icon={<TrendingDown className="size-4" />}
+            accent="rust"
+            icon={<TrendingDown className="size-3.5" />}
           />
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2 mb-10">
+        <div className="mb-12 grid gap-6 lg:grid-cols-2 stagger">
           <CategoryDemand />
           <ModelQualityTable />
         </div>
 
-        {/* Top-10 joqarı talab */}
-        <section className="mb-10">
-          <div className="mb-3 flex items-center gap-2">
-            <TrendingUp className="size-5 text-green-600" />
-            <h2 className="text-xl font-semibold">Top-10 — joqarı talab</h2>
-          </div>
-          <p className="text-sm text-slate-500 mb-4">
-            Eń kóp satılatuǵın hám maqtanatuǵın tovarlar. NSS — Net Sentiment
-            Score, Pop. — normallashtırılǵan popularlıq.
-          </p>
+        {/* Top-10 */}
+        <section id="demand" className="mb-12 animate-fade-up scroll-mt-8">
+          <SectionHead
+            icon={<TrendingUp className="size-4 text-sage" />}
+            title="Top-10 — joqarı talab"
+            desc="Eń kóp satılatuǵın hám maqtanatuǵın tovarlar. NSS — Net Sentiment Score, Pop. — normallastırılǵan populyarlıq."
+          />
           {topDemand.length > 0 ? (
             <DemandTable rows={topDemand} />
           ) : (
-            <p className="text-slate-500 text-sm">Maǵlıwmat joq</p>
+            <EmptyRow />
           )}
         </section>
 
         {/* Anti-top */}
-        <section className="mb-10">
-          <div className="mb-3 flex items-center gap-2">
-            <TrendingDown className="size-5 text-red-600" />
-            <h2 className="text-xl font-semibold">Anti-top — tómen talab</h2>
-          </div>
-          <p className="text-sm text-slate-500 mb-4">
-            Klient pikirinde shaǵımı kóp tovarlar. «Tar boyın» — eń kóp negativ
-            tabılǵan aspekt, vendorǵa jaqsırtıw signalı.
-          </p>
+        <section className="mb-12 animate-fade-up">
+          <SectionHead
+            icon={<TrendingDown className="size-4 text-rust" />}
+            title="Anti-top — tómen talab"
+            desc="Klient pikirinde shaǵımı kóp tovarlar. «Tar boyın» — eń kóp negativ tabılǵan aspekt, vendorǵa jaqsırtıw signalı."
+          />
           {bottomDemand.length > 0 ? (
             <DemandTable rows={bottomDemand} highlightBottleneck />
           ) : (
-            <p className="text-slate-500 text-sm">Maǵlıwmat joq</p>
+            <EmptyRow />
           )}
         </section>
 
-        {/* Formula bayanı */}
-        <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-blue-50 dark:bg-blue-950/30 p-6 text-sm">
-          <h3 className="font-semibold mb-2">Demand Score qanday esaplanadı</h3>
-          <code className="block font-mono text-xs bg-white dark:bg-slate-900 p-3 rounded-lg mb-3">
+        {/* Формула */}
+        <section className="panel p-7 text-sm animate-fade-up">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="size-1.5 rounded-full bg-clay" />
+            <h3 className="font-display text-lg font-bold text-sand">
+              Demand Score qanday esaplanadı
+            </h3>
+          </div>
+          <code className="block font-mono text-xs text-clay-bright bg-night border border-hairline p-4 rounded-lg mb-5">
             demand = popularity × satisfaction × aspect_penalty × 100
           </code>
-          <ul className="space-y-1.5 text-slate-700 dark:text-slate-300">
+          <ul className="space-y-2.5 text-sand-dim">
             <li>
-              <b>popularity</b> = log10(reviews + 1) / log10(101) — 0..1
-              normallashtırıw, potolok 100 pikir.
+              <b className="text-sand">popularity</b> = log₁₀(reviews + 1) /
+              log₁₀(101) — 0..1 normallastırıw, potolok 100 pikir.
             </li>
             <li>
-              <b>satisfaction</b> = (1·pos + 0.5·neu + 0·neg) / total — Customer
-              Satisfaction Index. Neytral 0.5 vesh menen — modeldıń ózbek
-              tilindegi bias'ın yumshatatuǵın.
+              <b className="text-sand">satisfaction</b> = (1·pos + 0.5·neu +
+              0·neg) / total — Customer Satisfaction Index. Neytral 0.5 salmaq
+              menen — modeldıń ózbek tilindegi biasʼın jumsartadı.
             </li>
             <li>
-              <b>aspect_penalty</b> = 15%'ǵa shekem poprawka, eger aspekt
-              boyınsha kóp negativ tabılsa (yetkazıb berıw / baha / sapa / qadoq).
+              <b className="text-sand">aspect_penalty</b> = 15%ʼǵa shekem
+              poprawka, eger aspekt boyınsha kóp negativ tabılsa (jetkeriw /
+              baha / sapa / qadoq).
             </li>
-            <li className="text-slate-500">
-              Shámirler: ≥50 — joqarı talab, 25–50 — orta, &lt;25 — tómen.
+            <li className="text-sand-faint">
+              Shegaralar: ≥50 — joqarı talab, 25–50 — orta, &lt;25 — tómen.
             </li>
           </ul>
         </section>
@@ -149,24 +157,65 @@ export default async function DashboardPage() {
   );
 }
 
+const ACCENT: Record<string, string> = {
+  clay: "text-clay",
+  sage: "text-sage",
+  rust: "text-rust",
+  sand: "text-sand",
+};
+
 function StatCard({
   label,
   value,
-  valueClass = "",
+  accent = "sand",
   icon,
 }: {
   label: string;
   value: string;
-  valueClass?: string;
+  accent?: "clay" | "sage" | "rust" | "sand";
   icon?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
-      <div className="text-xs text-slate-500 mb-1 flex items-center gap-1.5">
+    <div className="animate-fade-up bg-panel p-6">
+      <div className="flex items-center gap-1.5 text-xs text-sand-faint mb-2">
         {icon}
         {label}
       </div>
-      <div className={`text-3xl font-bold ${valueClass}`}>{value}</div>
+      <div
+        className={`font-mono text-3xl font-bold tabular-nums ${ACCENT[accent]}`}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
+
+function SectionHead({
+  icon,
+  title,
+  desc,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+}) {
+  return (
+    <div className="mb-5">
+      <div className="flex items-center gap-2">
+        <span className="flex size-7 items-center justify-center rounded-md border border-hairline bg-raised">
+          {icon}
+        </span>
+        <h2 className="font-display text-xl font-bold text-sand">{title}</h2>
+      </div>
+      <p className="mt-2 text-sm text-sand-dim max-w-3xl">{desc}</p>
+    </div>
+  );
+}
+
+function EmptyRow() {
+  return (
+    <div className="panel p-8 text-center text-sm text-sand-faint">
+      Maǵlıwmat joq — aldın scraper paneli arqalı pikir jıynań.
     </div>
   );
 }

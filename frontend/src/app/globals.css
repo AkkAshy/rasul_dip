@@ -1,26 +1,184 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Aral Intelligence — warm data-terminal design system
+   Палитра ночной земли Приаралья: глина, песок, индиго ночи.
+   ============================================================ */
+
+@theme {
+  /* Fonts */
+  --font-display: var(--font-syne);
+  --font-sans: var(--font-dm-sans);
+  --font-mono: var(--font-jetbrains);
+
+  /* Surfaces — ночная земля */
+  --color-night: #14110e;
+  --color-panel: #1b1712;
+  --color-raised: #231d15;
+  --color-hairline: #2f2718;
+  --color-hairline-soft: #241e15;
+
+  /* Ink — песок */
+  --color-sand: #e8dcc8;
+  --color-sand-dim: #a89a82;
+  --color-sand-faint: #6f6450;
+
+  /* Accent — глина / терракота */
+  --color-clay: #c97a4a;
+  --color-clay-bright: #e3965e;
+  --color-clay-deep: #9a542f;
+
+  /* Secondary — индиго ночи */
+  --color-indigo: #7d7cc0;
+  --color-indigo-deep: #3b3a6b;
+
+  /* Semantic sentiment — согретая семантика */
+  --color-sage: #87a96b;
+  --color-sage-bright: #a3c585;
+  --color-rust: #ca5a45;
+  --color-rust-bright: #e07a63;
+  --color-honey: #d9a441;
+
+  /* Radii — мягкие, но не «пузыри» */
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.875rem;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--color-night);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-night);
+  color: var(--color-sand);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-feature-settings: "ss01";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Тёплое сияние из углов */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 600px at 12% -5%, rgba(201, 122, 74, 0.1), transparent 60%),
+    radial-gradient(700px 500px at 100% 0%, rgba(59, 58, 107, 0.12), transparent 55%);
+}
+
+/* Плёночное зерно */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+body > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Display headings */
+.font-display {
+  font-family: var(--font-display), system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.tabular-nums,
+.font-mono {
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: rgba(201, 122, 74, 0.32);
+  color: var(--color-sand);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-night);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-hairline);
+  border-radius: 999px;
+  border: 2px solid var(--color-night);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-clay-deep);
+}
+
+/* ---- Entrance анимации ---- */
+@keyframes aral-fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes aral-bar {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+.animate-fade-up {
+  animation: aral-fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-bar {
+  transform-origin: left;
+  animation: aral-bar 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.stagger > *:nth-child(1) { animation-delay: 0.04s; }
+.stagger > *:nth-child(2) { animation-delay: 0.09s; }
+.stagger > *:nth-child(3) { animation-delay: 0.14s; }
+.stagger > *:nth-child(4) { animation-delay: 0.19s; }
+.stagger > *:nth-child(5) { animation-delay: 0.24s; }
+.stagger > *:nth-child(6) { animation-delay: 0.29s; }
+.stagger > *:nth-child(7) { animation-delay: 0.34s; }
+.stagger > *:nth-child(8) { animation-delay: 0.39s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-bar { animation: none; }
+}
+
+/* Glow для hero-метрик */
+.glow-clay {
+  text-shadow: 0 0 28px rgba(201, 122, 74, 0.45);
+}
+
+/* Glass-глиняная панель */
+.panel {
+  background: linear-gradient(160deg, rgba(35, 29, 21, 0.9), rgba(27, 23, 18, 0.9));
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-xl);
+  box-shadow:
+    0 1px 0 rgba(232, 220, 200, 0.03) inset,
+    0 18px 40px -24px rgba(0, 0, 0, 0.7);
+}
+
+.panel-hover {
+  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+.panel-hover:hover {
+  border-color: var(--color-clay-deep);
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 0 rgba(232, 220, 200, 0.05) inset,
+    0 24px 50px -24px rgba(0, 0, 0, 0.8);
 }

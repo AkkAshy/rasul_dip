@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Search, Star } from "lucide-react";
 import type { Product } from "@/lib/api";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8001/api";
@@ -9,7 +9,9 @@ interface PaginatedProducts {
   results: Product[];
 }
 
-async function fetchProducts(params: URLSearchParams): Promise<PaginatedProducts | null> {
+async function fetchProducts(
+  params: URLSearchParams
+): Promise<PaginatedProducts | null> {
   try {
     const url = `${API_URL}/products/?${params.toString()}`;
     const res = await fetch(url, { cache: "no-store" });
@@ -22,7 +24,9 @@ async function fetchProducts(params: URLSearchParams): Promise<PaginatedProducts
 
 async function fetchCategories(): Promise<{ id: number; name: string }[]> {
   try {
-    const res = await fetch(`${API_URL}/products/categories/`, { cache: "no-store" });
+    const res = await fetch(`${API_URL}/products/categories/`, {
+      cache: "no-store",
+    });
     if (!res.ok) return [];
     const data = await res.json();
     return data.results || data;
@@ -34,7 +38,11 @@ async function fetchCategories(): Promise<{ id: number; name: string }[]> {
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string; category?: string; ordering?: string }>;
+  searchParams: Promise<{
+    search?: string;
+    category?: string;
+    ordering?: string;
+  }>;
 }) {
   const sp = await searchParams;
 
@@ -52,36 +60,52 @@ export default async function ProductsPage({
   const products = data?.results || [];
   const total = data?.count || 0;
 
+  const fieldCls =
+    "w-full rounded-lg border border-hairline bg-night px-3.5 py-2.5 text-sm text-sand placeholder:text-sand-faint outline-none transition-colors focus:border-clay";
+
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <div className="container mx-auto px-6 py-10 max-w-6xl">
+    <main className="min-h-screen">
+      <div className="container mx-auto px-6 py-12 max-w-6xl">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 mb-6"
+          className="inline-flex items-center gap-2 text-sm text-sand-dim transition-colors hover:text-clay mb-8"
         >
           <ArrowLeft className="size-4" /> Artqa
         </Link>
 
-        <header className="mb-6">
-          <h1 className="text-3xl font-bold mb-1">Tovarlar</h1>
-          <p className="text-slate-500 text-sm">
-            Tutıq: {total}. Demand Score hám aspekt'lerdı kóriw uchın tovarǵa basıń.
+        <header className="mb-8 animate-fade-up">
+          <div className="font-mono text-xs uppercase tracking-[0.18em] text-clay mb-3">
+            Catalog
+          </div>
+          <h1 className="font-display text-4xl md:text-5xl font-extrabold text-sand">
+            Tovarlar
+          </h1>
+          <p className="mt-3 text-sm text-sand-dim">
+            Tabıldı{" "}
+            <span className="font-mono text-clay tabular-nums">{total}</span>.
+            Demand Score hám aspektʼlerdi kóriw ushın tovarǵa basıń.
           </p>
         </header>
 
-        {/* Filters */}
-        <form className="mb-8 grid gap-3 md:grid-cols-3" method="get">
-          <input
-            type="text"
-            name="search"
-            defaultValue={sp.search || ""}
-            placeholder="Tovar atı boyınsha izlew"
-            className="rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
-          />
+        {/* Фильтры */}
+        <form
+          className="panel mb-10 grid gap-3 p-5 md:grid-cols-3 animate-fade-up"
+          method="get"
+        >
+          <div className="relative md:col-span-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-sand-faint" />
+            <input
+              type="text"
+              name="search"
+              defaultValue={sp.search || ""}
+              placeholder="Tovar atı boyınsha izlew"
+              className={`${fieldCls} pl-9`}
+            />
+          </div>
           <select
             name="category"
             defaultValue={sp.category || ""}
-            className="rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
+            className={fieldCls}
           >
             <option value="">Barlıq kategoriyalar</option>
             {categories.map((c) => (
@@ -93,7 +117,7 @@ export default async function ProductsPage({
           <select
             name="ordering"
             defaultValue={sp.ordering || "-reviews_count"}
-            className="rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
+            className={fieldCls}
           >
             <option value="-reviews_count">Pikir sanı boyınsha ↓</option>
             <option value="-rating_avg">Reyting boyınsha ↓</option>
@@ -104,13 +128,13 @@ export default async function ProductsPage({
           <div className="md:col-span-3 flex gap-2">
             <button
               type="submit"
-              className="rounded-md bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium"
+              className="rounded-lg bg-clay px-5 py-2.5 text-sm font-semibold text-night transition-all hover:bg-clay-bright"
             >
               Qollaw
             </button>
             <Link
               href="/products"
-              className="rounded-md border border-slate-300 dark:border-slate-700 px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="rounded-lg border border-hairline px-5 py-2.5 text-sm text-sand-dim transition-colors hover:border-clay-deep hover:text-sand"
             >
               Taslaw
             </Link>
@@ -118,27 +142,42 @@ export default async function ProductsPage({
         </form>
 
         {products.length === 0 ? (
-          <p className="text-slate-500">Tabılmadı.</p>
+          <div className="panel p-10 text-center text-sm text-sand-faint">
+            Tabılmadı.
+          </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 stagger">
             {products.map((p) => (
               <Link
                 key={p.id}
                 href={`/products/${p.id}`}
-                className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 hover:border-blue-500 transition-colors"
+                className="panel panel-hover group animate-fade-up p-5"
               >
                 <div className="flex justify-between gap-3">
-                  <h3 className="font-semibold line-clamp-2">{p.name}</h3>
-                  <span className="text-xs text-slate-500 shrink-0">{p.source}</span>
+                  <h3 className="font-medium text-sand line-clamp-2 transition-colors group-hover:text-clay-bright">
+                    {p.name}
+                  </h3>
+                  <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-sand-faint">
+                    {p.source}
+                  </span>
                 </div>
-                <div className="mt-3 flex items-center gap-4 text-sm text-slate-500 flex-wrap">
+                <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
                   {p.category_name && (
-                    <span className="text-xs px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800">
+                    <span className="rounded-md border border-hairline bg-raised px-2 py-0.5 text-xs text-sand-dim">
                       {p.category_name}
                     </span>
                   )}
-                  {p.rating_avg != null && <span>★ {p.rating_avg.toFixed(2)}</span>}
-                  <span>{p.reviews_count} pikir</span>
+                  {p.rating_avg != null && (
+                    <span className="inline-flex items-center gap-1 text-honey">
+                      <Star className="size-3.5 fill-current" />
+                      <span className="font-mono tabular-nums">
+                        {p.rating_avg.toFixed(2)}
+                      </span>
+                    </span>
+                  )}
+                  <span className="font-mono text-xs tabular-nums text-sand-faint">
+                    {p.reviews_count} pikir
+                  </span>
                 </div>
               </Link>
             ))}

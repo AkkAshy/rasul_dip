@@ -13,16 +13,16 @@ export function PraiseComplaints({
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <Block
-        title="Ne uchun maqtaydı"
+        title="Ne ushın maqtaydı"
         items={praise}
-        icon={<ThumbsUp className="size-5 text-green-600" />}
-        color="green"
+        icon={<ThumbsUp className="size-4 text-sage" />}
+        color="sage"
       />
       <Block
-        title="Ne uchun shaǵımladı"
+        title="Ne ushın shaǵımladı"
         items={complaints}
-        icon={<ThumbsDown className="size-5 text-red-600" />}
-        color="red"
+        icon={<ThumbsDown className="size-4 text-rust" />}
+        color="rust"
       />
     </div>
   );
@@ -37,33 +37,41 @@ function Block({
   title: string;
   items: AspectQuote[];
   icon: React.ReactNode;
-  color: "green" | "red";
+  color: "sage" | "rust";
 }) {
   const tagCls =
-    color === "green"
-      ? "bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-300"
-      : "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-300";
+    color === "sage"
+      ? "border-sage/30 bg-sage/10 text-sage-bright"
+      : "border-rust/30 bg-rust/10 text-rust-bright";
+  const barCls = color === "sage" ? "border-sage/40" : "border-rust/40";
+
   return (
-    <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-      <h3 className="flex items-center gap-2 text-lg font-semibold mb-4">
-        {icon}
+    <section className="panel p-6">
+      <h3 className="flex items-center gap-2 font-display text-base font-bold text-sand mb-5">
+        <span className="flex size-7 items-center justify-center rounded-md border border-hairline bg-raised">
+          {icon}
+        </span>
         {title}
       </h3>
       {items.length === 0 ? (
-        <p className="text-slate-500 text-sm">Eslewler joq</p>
+        <p className="text-sand-faint text-sm">Eslewler joq</p>
       ) : (
-        <ul className="space-y-3">
+        <ul className="space-y-4">
           {items.map((it, i) => (
             <li key={i}>
-              <div className="flex items-baseline gap-2 mb-1">
-                <span className={`px-2 py-0.5 rounded-md text-xs font-medium ${tagCls}`}>
+              <div className="flex items-baseline gap-2 mb-1.5">
+                <span
+                  className={`rounded-md border px-2 py-0.5 text-xs font-medium ${tagCls}`}
+                >
                   {it.aspect}
                 </span>
-                <span className="text-xs text-slate-500 tabular-nums">
+                <span className="font-mono text-xs tabular-nums text-sand-faint">
                   score {it.score.toFixed(2)}
                 </span>
               </div>
-              <blockquote className="text-sm text-slate-700 dark:text-slate-300 border-l-2 border-slate-200 dark:border-slate-700 pl-3 italic">
+              <blockquote
+                className={`border-l-2 ${barCls} pl-3 text-sm italic text-sand-dim`}
+              >
                 «{it.snippet}»
               </blockquote>
             </li>

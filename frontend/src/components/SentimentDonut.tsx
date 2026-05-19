@@ -1,5 +1,12 @@
 "use client";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from "recharts";
 
 interface Item {
   label: string;
@@ -7,12 +14,12 @@ interface Item {
 }
 
 const COLORS: Record<string, string> = {
-  positive: "#22c55e",
-  neutral: "#94a3b8",
-  negative: "#ef4444",
+  positive: "#87a96b", // sage
+  neutral: "#a89a82", // sand-dim
+  negative: "#ca5a45", // rust
 };
 
-const LABEL_RU: Record<string, string> = {
+const LABEL_KAA: Record<string, string> = {
   positive: "Pozitiv",
   neutral: "Neytral",
   negative: "Negativ",
@@ -20,7 +27,7 @@ const LABEL_RU: Record<string, string> = {
 
 export function SentimentDonut({ data }: { data: Item[] }) {
   const chartData = data.map((d) => ({
-    name: LABEL_RU[d.label] || d.label,
+    name: LABEL_KAA[d.label] || d.label,
     value: d.count,
     rawLabel: d.label,
   }));
@@ -32,16 +39,34 @@ export function SentimentDonut({ data }: { data: Item[] }) {
           data={chartData}
           dataKey="value"
           nameKey="name"
-          innerRadius={60}
+          innerRadius={62}
           outerRadius={100}
-          paddingAngle={2}
+          paddingAngle={3}
+          stroke="#1b1712"
+          strokeWidth={3}
         >
           {chartData.map((entry) => (
-            <Cell key={entry.rawLabel} fill={COLORS[entry.rawLabel] || "#64748b"} />
+            <Cell
+              key={entry.rawLabel}
+              fill={COLORS[entry.rawLabel] || "#a89a82"}
+            />
           ))}
         </Pie>
-        <Tooltip />
-        <Legend />
+        <Tooltip
+          contentStyle={{
+            background: "#1b1712",
+            border: "1px solid #2f2718",
+            borderRadius: 10,
+            color: "#e8dcc8",
+            fontSize: 13,
+          }}
+          itemStyle={{ color: "#e8dcc8" }}
+          cursor={false}
+        />
+        <Legend
+          iconType="circle"
+          wrapperStyle={{ fontSize: 13, color: "#a89a82" }}
+        />
       </PieChart>
     </ResponsiveContainer>
   );

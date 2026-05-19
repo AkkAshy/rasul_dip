@@ -23,7 +23,10 @@ interface ScraperJob {
 
 type JobKind = "scrape_top" | "scrape_full" | "run_sentiment" | "run_absa";
 
-const KIND_PRESETS: Record<JobKind, { label: string; params: Record<string, unknown>; desc: string }> = {
+const KIND_PRESETS: Record<
+  JobKind,
+  { label: string; params: Record<string, unknown>; desc: string }
+> = {
   scrape_top: {
     label: "Tovar metadata + top-pikir (tez)",
     params: { from: 1, to: 1000, min_reviews: 5 },
@@ -42,20 +45,41 @@ const KIND_PRESETS: Record<JobKind, { label: string; params: Record<string, unkn
   run_absa: {
     label: "ABSA — aspekt analizı",
     params: { reanalyze: false },
-    desc: "Hár pikirde 4 aspekt (yetkazıb berıw, baha, sapa, qadoq) izlenedi.",
+    desc: "Hár pikirde 4 aspekt (jetkeriw, baha, sapa, qadoq) izlenedi.",
   },
 };
 
 function statusBadge(status: ScraperJob["status"]) {
-  const map: Record<string, { cls: string; icon: React.ReactNode; label: string }> = {
-    pending: { cls: "bg-slate-100 text-slate-600", icon: <Loader2 className="size-3 animate-spin" />, label: "Kútilmoqda" },
-    running: { cls: "bg-blue-100 text-blue-700", icon: <Loader2 className="size-3 animate-spin" />, label: "Islaytur" },
-    success: { cls: "bg-green-100 text-green-700", icon: <Check className="size-3" />, label: "Tamam" },
-    failed: { cls: "bg-red-100 text-red-700", icon: <X className="size-3" />, label: "Qátegi" },
+  const map: Record<
+    string,
+    { cls: string; icon: React.ReactNode; label: string }
+  > = {
+    pending: {
+      cls: "border-hairline bg-raised text-sand-dim",
+      icon: <Loader2 className="size-3 animate-spin" />,
+      label: "Kútilmoqda",
+    },
+    running: {
+      cls: "border-clay/30 bg-clay/10 text-clay-bright",
+      icon: <Loader2 className="size-3 animate-spin" />,
+      label: "Islaytur",
+    },
+    success: {
+      cls: "border-sage/30 bg-sage/10 text-sage-bright",
+      icon: <Check className="size-3" />,
+      label: "Tamam",
+    },
+    failed: {
+      cls: "border-rust/30 bg-rust/10 text-rust-bright",
+      icon: <X className="size-3" />,
+      label: "Qátegi",
+    },
   };
   const { cls, icon, label } = map[status];
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium ${cls}`}>
+    <span
+      className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-medium ${cls}`}
+    >
       {icon} {label}
     </span>
   );
@@ -68,12 +92,10 @@ export function ScraperPanel() {
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
 
-  // Initial load — last job state
   useEffect(() => {
     refresh();
   }, []);
 
-  // Polling while running
   useEffect(() => {
     if (job?.status !== "running" && job?.status !== "pending") return;
     const t = setInterval(refresh, 3000);
@@ -82,7 +104,9 @@ export function ScraperPanel() {
 
   async function refresh() {
     try {
-      const res = await fetch(`${API_URL}/scraper/latest/`, { cache: "no-store" });
+      const res = await fetch(`${API_URL}/scraper/latest/`, {
+        cache: "no-store",
+      });
       if (!res.ok) return;
       const data = await res.json();
       setJob(data);
@@ -117,34 +141,42 @@ export function ScraperPanel() {
   }
 
   const isRunning = job?.status === "running" || job?.status === "pending";
+  const fieldCls =
+    "rounded-lg border border-hairline bg-night px-3.5 py-2.5 text-sm text-sand outline-none transition-colors focus:border-clay disabled:opacity-50";
 
   return (
-    <section className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-      <div className="flex items-start justify-between gap-4 mb-4">
+    <section className="panel p-7">
+      <div className="mb-5 flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold mb-1">Maǵlıwmat jıynaw paneli</h2>
-          <p className="text-sm text-slate-500">
-            Uzum Market'tan jańa pikirlerdı tortıw hám ML pipeline'in baslaw.
+          <h2 className="font-display text-lg font-bold text-sand mb-1">
+            Maǵlıwmat jıynaw paneli
+          </h2>
+          <p className="text-sm text-sand-dim">
+            Uzum Marketʼtan jańa pikirlerdi tortıw hám ML pipelineʼin baslaw.
           </p>
         </div>
         <button
           onClick={refresh}
-          className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md text-slate-500"
+          className="rounded-md border border-hairline bg-raised p-2 text-sand-dim transition-colors hover:border-clay-deep hover:text-clay"
           title="Jangartıw"
         >
           <RefreshCcw className="size-4" />
         </button>
       </div>
 
-      {/* Kind selector */}
-      <div className="grid gap-3 md:grid-cols-2 mb-4">
+      <div className="mb-4 grid gap-3 md:grid-cols-2">
         <select
           value={selectedKind}
           onChange={(e) => setSelectedKind(e.target.value as JobKind)}
           disabled={isRunning}
-          className="rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm"
+          className={fieldCls}
         >
-          {(Object.entries(KIND_PRESETS) as [JobKind, typeof KIND_PRESETS[JobKind]][]).map(([k, v]) => (
+          {(
+            Object.entries(KIND_PRESETS) as [
+              JobKind,
+              (typeof KIND_PRESETS)[JobKind]
+            ][]
+          ).map(([k, v]) => (
             <option key={k} value={k}>
               {v.label}
             </option>
@@ -154,66 +186,66 @@ export function ScraperPanel() {
         <button
           onClick={startJob}
           disabled={isRunning || starting}
-          className="inline-flex items-center justify-center gap-2 rounded-md bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 disabled:cursor-not-allowed text-white px-4 py-2 text-sm font-medium"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-clay px-5 py-2.5 text-sm font-semibold text-night transition-all hover:bg-clay-bright disabled:cursor-not-allowed disabled:bg-hairline disabled:text-sand-faint"
         >
           {starting ? (
             <Loader2 className="size-4 animate-spin" />
           ) : (
             <Play className="size-4" />
           )}
-          {isRunning ? "Jumıs ámeliy ámelge asırılıp atır..." : "Skrabber baslaw"}
+          {isRunning ? "Jumıs ámelge asırılıp atır..." : "Skrabber baslaw"}
         </button>
       </div>
 
-      <p className="text-xs text-slate-500 mb-4">
+      <p className="mb-4 text-xs text-sand-faint leading-relaxed">
         {KIND_PRESETS[selectedKind].desc}
       </p>
 
       {error && (
-        <div className="rounded-md bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 p-3 text-sm mb-4">
+        <div className="mb-4 rounded-lg border border-rust/30 bg-rust/10 p-3 text-sm text-rust-bright">
           {error}
         </div>
       )}
 
-      {/* Job status card */}
       {job && (
-        <div className="rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 p-4">
-          <div className="flex items-center justify-between gap-3 mb-2">
+        <div className="rounded-lg border border-hairline bg-night p-4">
+          <div className="mb-3 flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <span className="text-xs text-slate-500">Jumıs #{job.id}</span>
-              <span className="text-xs text-slate-500">{job.kind_label}</span>
+              <span className="font-mono text-xs text-sand-faint">
+                #{job.id}
+              </span>
+              <span className="text-xs text-sand-dim">{job.kind_label}</span>
               {statusBadge(job.status)}
             </div>
             {job.duration_seconds != null && (
-              <span className="text-xs text-slate-500 tabular-nums">
+              <span className="font-mono text-xs tabular-nums text-sand-faint">
                 {job.duration_seconds.toFixed(1)}s
               </span>
             )}
           </div>
 
-          <div className="grid grid-cols-3 gap-3 text-xs mb-2">
+          <div className="mb-2 grid grid-cols-3 gap-3">
             <Stat label="Jańa tovar" value={job.products_added} />
             <Stat label="Jańa pikir" value={job.reviews_added} />
             <Stat label="Analiz" value={job.sentiment_analyzed} />
           </div>
 
           {job.error && (
-            <div className="mt-2 text-xs text-red-600 dark:text-red-400 font-mono">
+            <div className="mt-2 font-mono text-xs text-rust-bright">
               {job.error}
             </div>
           )}
 
-          {/* Log tail toggle */}
           {job.log_tail.length > 0 && (
             <>
               <button
                 onClick={() => setExpanded((v) => !v)}
-                className="mt-2 text-xs text-blue-600 hover:underline"
+                className="mt-3 font-mono text-xs text-clay transition-colors hover:text-clay-bright"
               >
-                {expanded ? "Logtı jaaw" : "Logtı kórtek"}
+                {expanded ? "▾ Logtı jaaw" : "▸ Logtı kórtek"}
               </button>
               {expanded && (
-                <pre className="mt-2 p-3 bg-slate-900 text-slate-100 rounded text-[10px] overflow-x-auto whitespace-pre-wrap max-h-48 overflow-y-auto">
+                <pre className="mt-2 max-h-48 overflow-auto whitespace-pre-wrap rounded-md border border-hairline bg-[#0d0b08] p-3 text-[10px] leading-relaxed text-sage-bright">
                   {job.log_tail.join("\n")}
                 </pre>
               )}
@@ -223,7 +255,7 @@ export function ScraperPanel() {
       )}
 
       {!job && (
-        <p className="text-sm text-slate-400 italic">
+        <p className="text-sm italic text-sand-faint">
           Házirgeshe jumıs joq. Birinshi jobtı baslań.
         </p>
       )}
@@ -234,8 +266,12 @@ export function ScraperPanel() {
 function Stat({ label, value }: { label: string; value: number }) {
   return (
     <div>
-      <div className="text-[10px] text-slate-500 uppercase">{label}</div>
-      <div className="text-lg font-semibold tabular-nums">{value}</div>
+      <div className="text-[10px] uppercase tracking-wider text-sand-faint">
+        {label}
+      </div>
+      <div className="font-mono text-lg font-semibold tabular-nums text-sand">
+        {value}
+      </div>
     </div>
   );
 }
