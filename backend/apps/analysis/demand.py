@@ -25,6 +25,8 @@ import math
 from dataclasses import dataclass
 from typing import Iterable
 
+from django.db.models import Count, Q
+
 from apps.products.models import Product
 from apps.reviews.models import Review
 from apps.analysis.models import SentimentResult, AspectMention
@@ -61,28 +63,23 @@ class DemandRow:
     bottleneck_aspect: str | None  # «слабое звено» по жалобам
 
 
-def _aspect_penalty(product: Product) -> tuple[float, str | None]:
+def _penalty_from_buckets(
+    buckets: list[tuple[str, int, int]]
+) -> tuple[float, str | None]:
     """
-    Если у товара много негативных упоминаний по аспекту — штраф.
-    Возвращаем коэффициент 0..1 и название аспекта-узкого-горлышка.
+    По агрегированным аспект-бакетам [(name, good, bad), ...] считает штраф.
 
-    Пример: если из 10 упоминаний «Доставка» → 6 негативных, это серьёзный сигнал.
+    Семантика 1:1 со старой реализацией:
+      - нет упоминаний  → (1.0, None)
+      - худший аспект — с макс. долей негатива среди тех, где ≥3 упоминания
+      - penalty = 1 − 0.15 × min(1, worst_neg_share × 1.5)  (макс −15%)
     """
-    mentions = AspectMention.objects.filter(review__product=product)
-    if not mentions.exists():
+    if not buckets:
         return 1.0, None
-
-    by_aspect: dict[str, list[int]] = {}
-    for m in mentions.select_related("aspect"):
-        bucket = by_aspect.setdefault(m.aspect.name, [0, 0])  # [pos+neu, neg]
-        if m.label == "negative":
-            bucket[1] += 1
-        else:
-            bucket[0] += 1
 
     worst_aspect = None
     worst_neg_share = 0.0
-    for name, (good, bad) in by_aspect.items():
+    for name, good, bad in buckets:
         total = good + bad
         if total < 3:  # слишком мало — игнор
             continue
@@ -91,17 +88,55 @@ def _aspect_penalty(product: Product) -> tuple[float, str | None]:
             worst_neg_share = neg_share
             worst_aspect = name
 
-    # Чем больше доля негатива — тем сильнее штраф (макс −15%)
     penalty = 1.0 - 0.15 * min(1.0, worst_neg_share * 1.5)
     return penalty, worst_aspect
 
 
-def compute_demand_for_product(product: Product) -> DemandRow | None:
-    """Полный расчёт строки спроса для одного товара."""
-    sr_qs = SentimentResult.objects.filter(review__product=product)
-    pos = sr_qs.filter(label="positive").count()
-    neu = sr_qs.filter(label="neutral").count()
-    neg = sr_qs.filter(label="negative").count()
+def _sentiment_counts(product_ids: list[int] | None) -> dict[int, tuple[int, int, int]]:
+    """{product_id: (pos, neu, neg)} одним агрегирующим запросом (вместо N×3 .count())."""
+    qs = SentimentResult.objects.all()
+    if product_ids is not None:
+        qs = qs.filter(review__product_id__in=product_ids)
+    rows = qs.values("review__product_id").annotate(
+        pos=Count("id", filter=Q(label="positive")),
+        neu=Count("id", filter=Q(label="neutral")),
+        neg=Count("id", filter=Q(label="negative")),
+    )
+    return {
+        r["review__product_id"]: (r["pos"], r["neu"], r["neg"]) for r in rows
+    }
+
+
+def _aspect_buckets(
+    product_ids: list[int] | None,
+) -> dict[int, list[tuple[str, int, int]]]:
+    """{product_id: [(aspect_name, good, bad), ...]} одним запросом (вместо N запросов)."""
+    qs = AspectMention.objects.all()
+    if product_ids is not None:
+        qs = qs.filter(review__product_id__in=product_ids)
+    rows = (
+        qs.values("review__product_id", "aspect__name")
+        .annotate(
+            bad=Count("id", filter=Q(label="negative")),
+            good=Count("id", filter=~Q(label="negative")),
+        )
+        .order_by("review__product_id", "aspect__name")
+    )
+    out: dict[int, list[tuple[str, int, int]]] = {}
+    for r in rows:
+        out.setdefault(r["review__product_id"], []).append(
+            (r["aspect__name"], r["good"], r["bad"])
+        )
+    return out
+
+
+def _build_row(
+    product: Product,
+    counts: tuple[int, int, int],
+    buckets: list[tuple[str, int, int]],
+) -> DemandRow | None:
+    """Чистая сборка строки из уже посчитанных агрегатов. Формула не меняется."""
+    pos, neu, neg = counts
     total = pos + neu + neg
     if total == 0:
         return None
@@ -113,7 +148,7 @@ def compute_demand_for_product(product: Product) -> DemandRow | None:
     popularity = math.log10(total + 1) / math.log10(POPULARITY_CEILING + 1)
     popularity = min(popularity, 1.0)
 
-    penalty, bottleneck = _aspect_penalty(product)
+    penalty, bottleneck = _penalty_from_buckets(buckets)
     demand_raw = popularity * satisfaction * penalty
     demand_score = round(demand_raw * 100, 1)
 
@@ -136,12 +171,37 @@ def compute_demand_for_product(product: Product) -> DemandRow | None:
     )
 
 
+def compute_demand_for_product(product: Product) -> DemandRow | None:
+    """Полный расчёт строки спроса для одного товара (2 агрегата вместо ~5 запросов)."""
+    counts = _sentiment_counts([product.id]).get(product.id)
+    if counts is None:
+        return None
+    buckets = _aspect_buckets([product.id]).get(product.id, [])
+    return _build_row(product, counts, buckets)
+
+
 def compute_demand_table(products: Iterable[Product] | None = None) -> list[DemandRow]:
-    """Вычисляет Demand-таблицу. Без БД-кэша — простая реализация для дипломного проекта."""
-    qs = products if products is not None else Product.objects.all()
+    """
+    Demand-таблица за 3 запроса (товары + 2 агрегата) вместо N+1.
+
+    Раньше: на каждый из ~190 товаров ~5 запросов (3×count + аспекты +
+    подгрузка категории) → ~950 запросов, ~15 c. Стало — O(N) в памяти.
+    """
+    if products is not None:
+        plist = list(products)
+    else:
+        plist = list(Product.objects.select_related("category").all())
+
+    ids = [p.id for p in plist]
+    sentiment = _sentiment_counts(ids)
+    aspects = _aspect_buckets(ids)
+
     rows = []
-    for p in qs:
-        row = compute_demand_for_product(p)
+    for p in plist:
+        counts = sentiment.get(p.id)
+        if counts is None:
+            continue
+        row = _build_row(p, counts, aspects.get(p.id, []))
         if row:
             rows.append(row)
     rows.sort(key=lambda r: r.demand_score, reverse=True)
