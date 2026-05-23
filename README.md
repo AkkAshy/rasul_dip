@@ -1,4 +1,45 @@
-# Sentiment Analysis & Demand Index — маркетплейс Uzum
+# Talab indeksi — Uzum Market
+
+> **Tema:** Klient pikirleri tiykarında ónim talabın anıqlaw, sentimental analiz arqalı.
+
+**Talab indeksi** — Uzum Market sıyaqlı marketpleysde tovarǵa bolǵan talabnı tikkeley sansha emes, al **klient pikirleri arqalı** ólshew platforması. Tek satıw sanı emes, klientlardıń ne aytatuǵını, ne ushın maqtaytuǵın yamasa shaǵımlanatuǵını — bul tovardıń haqıyqıy bazar potencialın kórsetedi.
+
+## Másele
+
+Marketpleysde mıńlaǵan tovar bar, hár birinde — onlaǵan, júzlegen pikir. Vendor yamasa analitikke jeke-jeke oqıp sıpat shıǵarıw múmkin emes. Pikirler ru, uz hám kaa tillerinde aralasıp ketken, ózbek tili ushın tayar NLP-modeller bárinen jaqsı isleymeydi.
+
+## Sheshim
+
+Sistema klient pikirlerin tolıq avtomatlasdırılǵan jaǵdayda dóretedi: uzum.uz dan pikirler tortıladı (REST API hám headless brauzer arqalı), olardıń tónliki sentimental-analiz modeli menen anıqlanadı, sonnan keyin hár pikirde tórt biznes-aspekt — **jetkeriw, baha, sapa, qadoq** — bólek-bólek tekserilip, hár qaysısı boyınsha jaqsı/jaman tónlik beriledi. Aqırında bul barlıq signallar **bir kompozit Demand Score (0–100)** ishine jıynaladı:
+
+> populyarlıq × klient qanaatlanıwshılıǵı × aspekt poprawkası × 100
+
+Bul ball arqalı tovardı bir qaranıs penen júdá joqarı / orta / tómen talabqa jiklew múmkin, hám tar boyın qaysı aspekte ekenin (mısalı, «baha jaqsı, jetkeriw oǵırı») dárhal kóriw múmkin.
+
+## Kim ushın
+
+- **Vendorǵa** — qaysı tovardı kúsheytiw, qaysı aspekti tabıw kerek
+- **Marketpleys analitigine** — kategoriya kesiminde qaysı segment ósip atır
+- **Klientke** — tovardı tek juldız emes, klient haqıyqıy tájiriybesi tiykarında bahalaw múmkin
+
+## Quralları haqqında qısqasha
+
+Backend — Python + Django, NLP boliminde HuggingFace transformerler. Frontend — Next.js, dashboardta interaktiv vizualizaciya. Maǵlıwmat PostgreSQL'de. Sistema **realniy prodda jaylasqan**: API serverde, dashboard bulttı platformada, hár CI/CD push avtomatlı tárizde shıǵarıladı.
+
+## Diplom ushın tiykarǵı ashılıs
+
+Multilingual baseline-modeldıń sapası til boyınsha keskin pariqlanadı: **rus** tilinde klient juldız reytingı menen **58.8%** uyǵın boladı, **ózbek** tilinde bolsa **18.4%** ǵana — model `zoʼr`, `ajoyib`, `tavsiya qilaman` siyaqlı pozitiv markerlardı tanıymaydı. Bul rakam ózbek hám karakalpak tilleri ushın **fine-tune zarurlıǵın empiriyalıq tárizde dáliyledi** — sebebi diplom jumısınıń biznes-tiykarı hám «alǵa shıǵıs» bóliminiń bas másalesi.
+
+## Prod
+
+| | URL |
+|---|---|
+| API | https://ml.saribek.uz |
+| Frontend | https://rasul-dip.vercel.app |
+
+---
+
+# Sentiment Analysis & Demand Index — маркетплейс Uzum (dev docs)
 
 > **Тема:** Определение спроса на продукт с помощью сентиментального анализа,
 > основанного на мнениях клиента
