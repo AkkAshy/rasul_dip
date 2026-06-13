@@ -14,9 +14,9 @@ interface Item {
 }
 
 const COLORS: Record<string, string> = {
-  positive: "#87a96b", // sage
-  neutral: "#a89a82", // sand-dim
-  negative: "#ca5a45", // rust
+  positive: "#6b8e4e", // sage
+  neutral: "#c4b79e", // warm gray (neytral)
+  negative: "#c2452e", // rust
 };
 
 const LABEL_KAA: Record<string, string> = {
@@ -42,30 +42,30 @@ export function SentimentDonut({ data }: { data: Item[] }) {
           innerRadius={62}
           outerRadius={100}
           paddingAngle={3}
-          stroke="#1b1712"
+          stroke="#fffdf9"
           strokeWidth={3}
         >
           {chartData.map((entry) => (
             <Cell
               key={entry.rawLabel}
-              fill={COLORS[entry.rawLabel] || "#a89a82"}
+              fill={COLORS[entry.rawLabel] || "#c4b79e"}
             />
           ))}
         </Pie>
         <Tooltip
           contentStyle={{
-            background: "#1b1712",
-            border: "1px solid #2f2718",
+            background: "#fffdf9",
+            border: "1px solid #ddd0b8",
             borderRadius: 10,
-            color: "#e8dcc8",
+            color: "#2b221a",
             fontSize: 13,
           }}
-          itemStyle={{ color: "#e8dcc8" }}
+          itemStyle={{ color: "#2b221a" }}
           cursor={false}
         />
         <Legend
           iconType="circle"
-          wrapperStyle={{ fontSize: 13, color: "#a89a82" }}
+          wrapperStyle={{ fontSize: 13, color: "#6e6047" }}
         />
       </PieChart>
     </ResponsiveContainer>

@@ -245,7 +245,7 @@ export function ScraperPanel() {
                 {expanded ? "▾ Logtı jaaw" : "▸ Logtı kórtek"}
               </button>
               {expanded && (
-                <pre className="mt-2 max-h-48 overflow-auto whitespace-pre-wrap rounded-md border border-hairline bg-[#0d0b08] p-3 text-[10px] leading-relaxed text-sage-bright">
+                <pre className="mt-2 max-h-48 overflow-auto whitespace-pre-wrap rounded-md border border-hairline bg-raised p-3 text-[10px] leading-relaxed text-sand-dim">
                   {job.log_tail.join("\n")}
                 </pre>
               )}

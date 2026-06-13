@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 /* ============================================================
-   Aral Intelligence — warm data-terminal design system
-   Палитра ночной земли Приаралья: глина, песок, индиго ночи.
+   Aral Intelligence — warm LIGHT design system
+   Тёплый светлый вариант: песочная бумага, глина, индиго.
    ============================================================ */
 
 @theme {
@@ -11,41 +11,41 @@
   --font-sans: var(--font-dm-sans);
   --font-mono: var(--font-jetbrains);
 
-  /* Surfaces — ночная земля */
-  --color-night: #14110e;
-  --color-panel: #1b1712;
-  --color-raised: #231d15;
-  --color-hairline: #2f2718;
-  --color-hairline-soft: #241e15;
+  /* Surfaces — тёплая бумага */
+  --color-night: #f4eee3;        /* фон страницы (светлый) */
+  --color-panel: #fffdf9;        /* карточки (тёплый белый) */
+  --color-raised: #efe7d8;       /* вложенные элементы / чипы */
+  --color-hairline: #ddd0b8;     /* бордеры */
+  --color-hairline-soft: #ebe2d2;
 
-  /* Ink — песок */
-  --color-sand: #e8dcc8;
-  --color-sand-dim: #a89a82;
-  --color-sand-faint: #6f6450;
+  /* Ink — тёмные чернила (текст) */
+  --color-sand: #2b221a;         /* основной текст */
+  --color-sand-dim: #6e6047;     /* вторичный */
+  --color-sand-faint: #9c8e76;   /* приглушённый */
 
   /* Accent — глина / терракота */
-  --color-clay: #c97a4a;
-  --color-clay-bright: #e3965e;
+  --color-clay: #bc6a38;
+  --color-clay-bright: #c97a4a;
   --color-clay-deep: #9a542f;
 
-  /* Secondary — индиго ночи */
-  --color-indigo: #7d7cc0;
+  /* Secondary — индиго */
+  --color-indigo: #5957a0;
   --color-indigo-deep: #3b3a6b;
 
-  /* Semantic sentiment — согретая семантика */
-  --color-sage: #87a96b;
-  --color-sage-bright: #a3c585;
-  --color-rust: #ca5a45;
-  --color-rust-bright: #e07a63;
-  --color-honey: #d9a441;
+  /* Semantic sentiment (читаемы на светлом) */
+  --color-sage: #6b8e4e;
+  --color-sage-bright: #4f6e36;
+  --color-rust: #c2452e;
+  --color-rust-bright: #a8341f;
+  --color-honey: #b07a12;
 
-  /* Radii — мягкие, но не «пузыри» */
+  /* Radii */
   --radius-lg: 0.625rem;
   --radius-xl: 0.875rem;
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html {
@@ -63,7 +63,7 @@ body {
   min-height: 100vh;
 }
 
-/* Тёплое сияние из углов */
+/* Тёплое сияние из углов (мягкий тёплый wash на светлом) */
 body::before {
   content: "";
   position: fixed;
@@ -72,7 +72,7 @@ body::before {
   pointer-events: none;
   background:
     radial-gradient(900px 600px at 12% -5%, rgba(201, 122, 74, 0.1), transparent 60%),
-    radial-gradient(700px 500px at 100% 0%, rgba(59, 58, 107, 0.12), transparent 55%);
+    radial-gradient(700px 500px at 100% 0%, rgba(89, 87, 160, 0.08), transparent 55%);
 }
 
 /* Плёночное зерно */
@@ -82,7 +82,7 @@ body::after {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.035;
+  opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -103,7 +103,7 @@ body > * {
 }
 
 ::selection {
-  background: rgba(201, 122, 74, 0.32);
+  background: rgba(188, 106, 56, 0.22);
   color: var(--color-sand);
 }
 
@@ -120,7 +120,7 @@ body > * {
   border: 2px solid var(--color-night);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-clay-deep);
+  background: var(--color-clay);
 }
 
 /* ---- Entrance анимации ---- */
@@ -157,28 +157,28 @@ body > * {
   .animate-bar { animation: none; }
 }
 
-/* Glow для hero-метрик */
+/* Glow для hero-метрик (мягкий тёплый ореол на светлом) */
 .glow-clay {
-  text-shadow: 0 0 28px rgba(201, 122, 74, 0.45);
+  text-shadow: 0 2px 18px rgba(188, 106, 56, 0.25);
 }
 
-/* Glass-глиняная панель */
+/* Светлая глиняная панель */
 .panel {
-  background: linear-gradient(160deg, rgba(35, 29, 21, 0.9), rgba(27, 23, 18, 0.9));
+  background: linear-gradient(160deg, #fffefb, #fdfaf4);
   border: 1px solid var(--color-hairline);
   border-radius: var(--radius-xl);
   box-shadow:
-    0 1px 0 rgba(232, 220, 200, 0.03) inset,
-    0 18px 40px -24px rgba(0, 0, 0, 0.7);
+    0 1px 2px rgba(43, 34, 26, 0.04),
+    0 14px 34px -22px rgba(43, 34, 26, 0.18);
 }
 
 .panel-hover {
   transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 .panel-hover:hover {
-  border-color: var(--color-clay-deep);
+  border-color: var(--color-clay);
   transform: translateY(-2px);
   box-shadow:
-    0 1px 0 rgba(232, 220, 200, 0.05) inset,
-    0 24px 50px -24px rgba(0, 0, 0, 0.8);
+    0 2px 4px rgba(43, 34, 26, 0.05),
+    0 20px 44px -22px rgba(43, 34, 26, 0.24);
 }
